@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import Pt from 'prop-types';
 import {getCoins} from '../../actions/coins';
 import Price from 'react-forex-price';
+import Spin from '../Spin';
 
 class Table extends Component {
   componentDidMount () {
@@ -15,7 +16,7 @@ class Table extends Component {
     const mobile = window.outerWidth < 670;
     const columns = [{
       Header: 'Название',
-      accessor: 'name' // String-based value accessors!
+      accessor: 'name'
     }, {
       Header: 'Стоимость',
       accessor: 'priceUsd',
@@ -31,15 +32,19 @@ class Table extends Component {
       Cell: row => <Price amount={row.value} rounding={Math.ceil} />,
       show: !mobile
     }];
-    const {coins} = this.props;
-    return (
-      coins ? <ReactTable
+    const {coins, isFetching} = this.props;
+    return <div>
+      <div className="spin">
+        <Spin show={isFetching}/>
+      </div>
+      {coins ? <ReactTable
         data={coins}
         columns={columns}
         minRows={0}
         showPagination={false}
-      /> : null
-    );
+      /> : null}
+    </div>
+    ;
   }
 }
 
@@ -56,7 +61,8 @@ const mapActionsToProps = {
 
 Table.propTypes = {
   getCoins: Pt.func,
-  coins: Pt.array
+  coins: Pt.array,
+  isFetching: Pt.bool
 };
 
 export default connect(

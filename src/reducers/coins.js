@@ -12,7 +12,7 @@ const coins = (state = initialState, action) => {
   case 'GET_COINS_SUCCESS':
     return {
       coins: action.data.data,
-      isFetching: true
+      isFetching: false
     };
   default:
     return state;
