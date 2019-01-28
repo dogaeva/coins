@@ -1,29 +1,26 @@
-import React, { Component } from 'react';
-import './Table.scss';
-import { connect } from 'react-redux';
-import Pt from 'prop-types';
-import { getCoins } from '../../actions/coins';
+import React from 'react';
+import { array, bool } from 'prop-types';
 import Price from 'react-forex-price';
 import Spin from '../Spin';
 import { Table } from 'antd';
+
+import './Table.scss';
 
 const columns = [
   {
     title: 'Название',
     dataIndex: 'name',
     key: 'name',
-    width: '30%'
+    width: '20%'
   },
   {
     title: 'Стоимость',
     dataIndex: 'priceUsd',
     key: 'priceUsd',
     render: priceUsd => (
-      <div className="table__price">
-        <Price amount={priceUsd} rounding={Math.ceil} />
-      </div>
+      <Price amount={priceUsd} rounding={num => parseFloat(num).toFixed(3)} />
     ),
-    width: '20%'
+    width: '25%'
   },
 
   {
@@ -31,9 +28,7 @@ const columns = [
     dataIndex: 'marketCapUsd',
     key: 'marketCapUsd',
     render: marketCapUsd => (
-      <div className="table__price">
-        <Price amount={marketCapUsd} rounding={Math.ceil} />
-      </div>
+      <Price amount={marketCapUsd} rounding={Math.floor} dropCents />
     ),
     width: '30%'
   },
@@ -42,55 +37,28 @@ const columns = [
     key: 'volumeUsd24Hr',
     dataIndex: 'volumeUsd24Hr',
     render: volumeUsd24Hr => (
-      <div className="table__price">
-        <Price amount={volumeUsd24Hr} rounding={Math.ceil} />
-      </div>
+      <Price amount={volumeUsd24Hr} rounding={Math.floor} dropCents />
     ),
-    width: '20%'
+    width: '25%'
   }
 ];
 
-class TableContainer extends Component {
-  componentDidMount () {
-    this.props.getCoins();
-  }
-
-  render () {
-    const { coins, isFetching } = this.props;
-    return (
-      <div className="table__container">
-        <div className="spin">
-          <Spin show={isFetching} />
-        </div>
-        {coins ? (
-          <Table
-            columns={columns}
-            dataSource={coins}
-            pagination={false}
-            scroll={{ y: 'calc(100vh - 230px)' }}
-          />
-        ) : null}
+const TableContainer = ({ isFetching, data }) => (
+  <div className="table__container">
+    {isFetching ? (
+      <div className="spin">
+        <Spin />
       </div>
-    );
-  }
-}
-
-const mapStateToProps = ({ coins: { coins, isFetching } }) => ({
-  coins,
-  isFetching
-});
-
-const mapActionsToProps = {
-  getCoins
-};
+    ) : null}
+    {data ? (
+      <Table columns={columns} dataSource={data} pagination={false} />
+    ) : null}
+  </div>
+);
 
 TableContainer.propTypes = {
-  getCoins: Pt.func,
-  coins: Pt.array,
-  isFetching: Pt.bool
+  data: array,
+  isFetching: bool
 };
 
-export default connect(
-  mapStateToProps,
-  mapActionsToProps
-)(TableContainer);
+export default TableContainer;

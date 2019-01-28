@@ -1,17 +1,17 @@
-import React from 'react';
-import './Container.scss';
-import Table from '../Table';
+import Container from './Container';
+import { getCoins } from '../../actions/coins';
+import { connect } from 'react-redux';
 
-const Container = () => {
-  return (
-    <div className="background">
-      <div className="background__top" />
-      <div className="container">
-        <header>Курсы криптовалют</header>
-        <Table />
-      </div>
-    </div>
-  );
+const mapStateToProps = ({ coins: { coins, isFetching } }) => ({
+  coins,
+  isFetching
+});
+
+const mapActionsToProps = {
+  getCoins
 };
 
-export default Container;
+export default connect(
+  mapStateToProps,
+  mapActionsToProps
+)(Container);
